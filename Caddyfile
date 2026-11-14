@@ -1,0 +1,42 @@
+# The web build talks to /hcgi/platform (PocketBase) and /hcgi/api (Express).
+# Keeping those prefix paths avoids changing the exported frontend.
+{$DOMAIN:localhost} {
+	encode zstd gzip
+
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+	header /index.html Cache-Control "no-cache"
+
+	# PocketBase (REST, files, realtime)
+	handle_path /hcgi/platform/* {
+		reverse_proxy pocketbase:8090
+	}
+
+	# Express API (account, signup, staff, AI)
+	handle_path /hcgi/api/* {
+		reverse_proxy api:3001
+	}
+
+	# PocketBase OAuth redirects and admin UI
+	handle /api/* {
+		reverse_proxy pocketbase:8090
+	}
+	handle /_/* {
+		reverse_proxy pocketbase:8090
+	}
+
+	# Static SPA with history fallback
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "SAMEORIGIN"
+		-Server
+	}
+}
