@@ -17,38 +17,6 @@ The bundled syllabus is the Uganda NCDC  curriculum for Science,
 Mathematics, English and Social Studies, three terms per year
 (`apps/web/src/lib/curriculumData.js`).
 
-- **Set SMTP before the first sign-up.** Verification and invite emails are
-  required for onboarding.
-- `./pb_data` is the database. Back it up; never delete it in production.
-- The PocketBase admin lives at `/_/`; restrict it to your IP or a VPN.
-- `scripts/backup.sh` creates an on-box backup under `./pb_data/backups/`; copy
-  those off-box with restic/rclone/rsync on a schedule.
-
-Updating:
-
-```bash
-git pull
-docker compose up -d --build
-```
-
-Migrations run automatically. Mail settings from `.env` are applied when the
-auth-settings migration first runs; after that, use PocketBase's Settings →
-Mail settings (or recreate a fresh `pb_data` in development) if SMTP changes.
-
-### Production checklist
-
-- [ ] DNS points at the VPS; ports 80/443 open; TLS issued
-- [ ] Strong `PB_SUPERUSER_PASSWORD` and `PB_ENCRYPTION_KEY`
-- [ ] SMTP configured with SPF/DKIM and tested from the login screen
-- [ ] `APP_URL` matches the public HTTPS URL exactly
-- [ ] `/_/` restricted (firewall/VPN/Cloudflare Access)
-- [ ] Daily backups + off-box copy; restore tested once
-- [ ] Demo data removed (`pb_data` from development never copied to prod)
-- [ ] `GOOGLE_CLIENT_ID`/`SECRET` set only if SSO is wanted
-- [ ] Uptime check on `/api/health` and `/hcgi/api/health`
-- [ ] Privacy policy / terms pages before public marketing
-
-
 
 **Adopted, adapted to coverage tracking:**
 
@@ -170,6 +138,4 @@ Before a public launch, follow [docs/production-checklist.md](docs/production-ch
 The short version: no `.env` is present, Docker has not been exercised here,
 SMTP and an OpenAI key must be configured, legal text needs counsel review and
 backup/restore must be tested. Fresh databases with `SEED_DEMO_DATA=false` are
-clean (no demo school/staff). The local production preview at
-`http://127.0.0.1:4000` is suitable for a private pilot, not the public internet.
-
+clean (no demo school/staff). 
